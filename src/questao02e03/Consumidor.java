@@ -12,36 +12,44 @@ public class Consumidor extends Thread{
     }
 
     public void run() {
-    	int caixas = 0;
+    	int c_consumidas = 0;
     	
-        for(int i = 0; i < 20; i++) {
-        	if (!deposito.retirar()) {
+        for(int i = 0; i < 20; i++){
+        	// 1ª tentativa
+            if(deposito.retirar()){
+            	c_consumidas++;
+                try{ 
+                	sleep(tempo); 
+                } catch(InterruptedException e){ 
+                	e.printStackTrace(); 
+                }
+            } else {
                 System.out.println("O consumidor " + id + " não conseguiu consumir a caixa. Nova tentativa em 0.5s.");
-                try {
-            		sleep(500);
-            	} catch (InterruptedException e) {
-            		e.printStackTrace();
-            	}
-                
-                if (!deposito.retirar()) {
+                try{ 
+                	sleep(500); 
+                } catch (InterruptedException e){ 
+                	e.printStackTrace(); 
+                }
+
+                // 2ª tentativa
+                if(deposito.retirar()){
+                	c_consumidas++;
+                    try{ 
+                    	sleep(tempo);
+                    } catch(InterruptedException e){ 
+                    	e.printStackTrace(); 
+                    }
+                } else {
                     System.out.println("O consumidor " + id + " ainda não conseguiu consumir a caixa. Pulando para a próxima caixa!");
-                    try {
-                		sleep(tempo);
-                	} catch (InterruptedException e) {
-                		e.printStackTrace();
-                	}
-                    continue;
+                    try{ 
+                    	sleep(tempo); 
+                    } catch(InterruptedException e){ 
+                    	e.printStackTrace(); 
+                    }
                 }
             }
-        	
-        	caixas++;
-        	try {
-        		sleep(tempo);
-        	} catch (InterruptedException e) {
-        		e.printStackTrace();
-				System.out.println("Consumidor " + id + " - Consumo interrompido!");
-        	}
         }
-        System.out.println("O consumidor " + id + " finalizou o consumo de " + caixas + " caixas.");
+        
+        System.out.println("O consumidor " + id + " finalizou o consumo de " + c_consumidas + " caixas.");
     }
 }
